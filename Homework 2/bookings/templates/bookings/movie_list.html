@@ -1,0 +1,56 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}Available Movies{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-4 mb-3">🎬 Now Showing</h1>
+        <p class="lead text-muted">Select a movie to book your seats</p>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% if movies %}
+<div class="row g-4">
+    {% for movie in movies %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card movie-card shadow">
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.title }}</h5>
+                <p class="card-text text-muted">{{ movie.description|truncatewords:20 }}</p>
+
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <strong>Release Date:</strong> {{ movie.release_date|date:"M d, Y" }}<br>
+                        <strong>Duration:</strong> {{ movie.duration }} minutes
+                    </small>
+                </div>
+
+                <a href="{% url 'book_seat' movie.id %}" class="btn btn-primary w-100">
+                    <i class="bi bi-ticket"></i> Book Tickets
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center" role="alert">
+    <h4 class="alert-heading">No Movies Available</h4>
+    <p>There are no movies currently showing. Please check back later!</p>
+    <hr>
+    <p class="mb-0">
+        <a href="/admin/bookings/movie/add/" class="btn btn-primary">Add a Movie (Admin)</a>
+    </p>
+</div>
+{% endif %}
+{% endblock %}

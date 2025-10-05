@@ -1,7 +1,9 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.models import User
 from .models import Movie, Seat, Booking
 from .serializers import MovieSerializer, SeatSerializer, BookingSerializer
 
@@ -101,7 +103,34 @@ def movie_list(request):
 def seat_booking(request, movie_id):
     """Display seat booking page for a specific movie"""
     movie = get_object_or_404(Movie, id=movie_id)
-    seats = Seat.objects.filter(status='available')
+
+    if request.method == 'POST':
+        seat_id = request.POST.get('seat_id')
+        seat = get_object_or_404(Seat, id=seat_id)
+
+        # Get or create a default user for demo purposes
+        user = request.user if request.user.is_authenticated else User.objects.first()
+
+        if seat.status == 'available':
+            # Create booking
+            Booking.objects.create(
+                movie=movie,
+                seat=seat,
+                user=user
+            )
+            # Update seat status
+            seat.status = 'booked'
+            seat.movie = movie
+            seat.save()
+
+            messages.success(request, f'Successfully booked seat {seat.seat_number} for {movie.title}!')
+            return redirect('booking_history')
+        else:
+            messages.error(request, 'This seat is already booked.')
+
+    # Get all seats for this movie
+    seats = Seat.objects.filter(movie=movie) | Seat.objects.filter(movie__isnull=True)
+
     return render(request, 'bookings/seat_booking.html', {
         'movie': movie,
         'seats': seats

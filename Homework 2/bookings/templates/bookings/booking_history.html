@@ -1,0 +1,67 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}Booking History{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-4 mb-3">📋 My Booking History</h1>
+        <p class="lead text-muted">View all your movie bookings</p>
+    </div>
+</div>
+
+{% if bookings %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Movie</th>
+                                <th>Seat Number</th>
+                                <th>User</th>
+                                <th>Booking Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>
+                                    <strong>{{ booking.movie.title }}</strong><br>
+                                    <small class="text-muted">{{ booking.movie.duration }} min</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">{{ booking.seat.seat_number }}</span>
+                                </td>
+                                <td>{{ booking.user.username }}</td>
+                                <td>{{ booking.booking_date|date:"M d, Y - g:i A" }}</td>
+                                <td>
+                                    <span class="badge bg-success">Confirmed</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'movie_list' %}" class="btn btn-primary">Book More Tickets</a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info text-center" role="alert">
+    <h4 class="alert-heading">No Bookings Yet</h4>
+    <p>You haven't made any bookings yet.</p>
+    <hr>
+    <p class="mb-0">
+        <a href="{% url 'movie_list' %}" class="btn btn-primary">Browse Movies</a>
+    </p>
+</div>
+{% endif %}
+{% endblock %}
