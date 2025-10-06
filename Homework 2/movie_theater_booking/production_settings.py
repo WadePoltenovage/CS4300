@@ -1,14 +1,9 @@
-"""
-Production settings for deployment on Render
-"""
 import os
 import dj_database_url
 from .settings import *
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', SECRET_KEY)
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
@@ -17,7 +12,6 @@ ALLOWED_HOSTS = [
     '.onrender.com',  # Allow all Render domains
 ]
 
-# Database configuration for Render PostgreSQL
 if os.environ.get('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(
@@ -27,7 +21,6 @@ if os.environ.get('DATABASE_URL'):
         )
     }
 
-# Static files configuration
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -35,7 +28,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Security settings for production
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
